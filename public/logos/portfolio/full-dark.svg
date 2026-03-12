@@ -1,0 +1,14 @@
+<svg width="320" height="96" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g-full-dark" x1="12" y1="12" x2="308" y2="84" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F1FF"/>
+      <stop offset="1" stop-color="#0B1322"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="316" height="92" rx="24" fill="url(#g-full-dark)"/>
+  <rect x="2" y="2" width="316" height="92" rx="24" stroke="#E7FBFF" stroke-opacity="0.34" stroke-width="2"/>
+  <circle cx="48" cy="48" r="22" fill="#E7FBFF"/>
+  <path d="M38 47.8L44.5 54L58 40.5" stroke="#00A3B2" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="86" y="44" fill="#E7FBFF" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">Guilherme Bodart</text>
+  <text x="86" y="66" fill="#B8D9E0" font-family="Segoe UI, Arial, sans-serif" font-size="13">Portfolio Project</text>
+</svg>

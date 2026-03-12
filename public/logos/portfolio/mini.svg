@@ -1,0 +1,12 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g-mini-light" x1="8" y1="8" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E8F8F"/>
+      <stop offset="1" stop-color="#102328"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="38" fill="url(#g-mini-light)"/>
+  <circle cx="40" cy="40" r="37" stroke="white" stroke-opacity="0.35" stroke-width="2"/>
+  <path d="M25 45V35.5C25 30.8056 28.8056 27 33.5 27H46.5C51.1944 27 55 30.8056 55 35.5V45C55 49.6944 51.1944 53.5 46.5 53.5H33.5C28.8056 53.5 25 49.6944 25 45Z" fill="white" fill-opacity="0.92"/>
+  <path d="M33 40.2L38 45L47 36" stroke="#0E8F8F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
