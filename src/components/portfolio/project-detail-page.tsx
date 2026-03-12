@@ -26,6 +26,7 @@ import { detailCopyByLocale, projectDetailsByLocale } from "@/data/project-detai
 import { usePortfolioPreferences } from "@/components/portfolio/use-portfolio-preferences";
 import { CursorGlow } from "@/components/motion/cursor-glow";
 import { ProjectLogo } from "@/components/portfolio/project-logo";
+import { trackEvent } from "@/lib/analytics";
 
 const featureIcons: Record<FeatureIconKey, LucideIcon> = {
   layers: Layers3,
@@ -96,7 +97,11 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
       <header className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-8 md:px-10">
         <div className="rounded-full border border-line/80 bg-card/90 px-4 py-3 backdrop-blur-xl md:px-6">
           <nav className="flex items-center justify-between gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Link
+              href="/"
+              onClick={() => trackEvent("back_to_home_click", { slug: project.slug, locale })}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-foreground"
+            >
               <ArrowLeft className="h-4 w-4" />
               {copy.backToHome}
             </Link>
@@ -104,7 +109,10 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
               <div className="inline-flex items-center gap-1 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => setLocale("pt")}
+                  onClick={() => {
+                    setLocale("pt");
+                    trackEvent("locale_change", { from: locale, to: "pt", location: "project_detail" });
+                  }}
                   className={`px-1 py-1 transition ${
                     locale === "pt"
                       ? "text-foreground"
@@ -117,7 +125,10 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 <span className="text-foreground/35">/</span>
                 <button
                   type="button"
-                  onClick={() => setLocale("en")}
+                  onClick={() => {
+                    setLocale("en");
+                    trackEvent("locale_change", { from: locale, to: "en", location: "project_detail" });
+                  }}
                   className={`px-1 py-1 transition ${
                     locale === "en"
                       ? "text-foreground"
@@ -130,7 +141,14 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
               </div>
               <button
                 type="button"
-                onClick={toggleTheme}
+                onClick={() => {
+                  trackEvent("theme_toggle", {
+                    from: theme,
+                    to: theme === "light" ? "dark" : "light",
+                    location: "project_detail",
+                  });
+                  toggleTheme();
+                }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg"
                 aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
               >
@@ -174,6 +192,12 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() =>
+                  trackEvent("project_detail_live_click", {
+                    slug: project.slug,
+                    locale,
+                  })
+                }
                 className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background transition hover:-translate-y-0.5 hover:shadow-lg"
               >
                 {project.liveLabel}
@@ -184,6 +208,12 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                   href={project.repoUrl}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() =>
+                    trackEvent("project_detail_repo_click", {
+                      slug: project.slug,
+                      locale,
+                    })
+                  }
                   className="inline-flex items-center gap-2 rounded-full border border-line bg-card-strong px-4 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   {project.repoLabel ?? "GitHub"}

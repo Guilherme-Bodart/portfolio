@@ -38,6 +38,7 @@ import {
 import { CursorGlow } from "@/components/motion/cursor-glow";
 import { usePortfolioPreferences } from "@/components/portfolio/use-portfolio-preferences";
 import { ProjectLogo } from "@/components/portfolio/project-logo";
+import { trackEvent } from "@/lib/analytics";
 
 const expertiseIcons: Record<ExpertiseIconKey, LucideIcon> = {
   layers: Layers3,
@@ -124,6 +125,7 @@ export function HomePage() {
   const { locale, setLocale, theme, toggleTheme } = usePortfolioPreferences();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [projectWindowStart, setProjectWindowStart] = useState(0);
+  const [uniqueVisitors, setUniqueVisitors] = useState<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
 
@@ -135,6 +137,43 @@ export function HomePage() {
   const copy = content.copy;
   const visibleProjectCount = 4;
   const shouldRotateProjects = content.projects.length > visibleProjectCount;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
+    async function loadUniqueVisitors() {
+      try {
+        const response = await fetch("/api/analytics/unique-visitors", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { totalUsers?: number | null };
+
+        if (
+          isMounted &&
+          typeof data.totalUsers === "number" &&
+          Number.isFinite(data.totalUsers) &&
+          data.totalUsers >= 0
+        ) {
+          setUniqueVisitors(data.totalUsers);
+        }
+      } catch {
+        // no-op: snapshot keeps static metrics when analytics is unavailable
+      }
+    }
+
+    loadUniqueVisitors();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     if (!shouldRotateProjects) {
@@ -158,6 +197,25 @@ export function HomePage() {
       return content.projects[projectIndex];
     });
   }, [content.projects, projectWindowStart, shouldRotateProjects]);
+
+  const snapshotItems = useMemo(() => {
+    const numberFormat = new Intl.NumberFormat(locale === "pt" ? "pt-BR" : "en-US");
+    const visitorsValue = uniqueVisitors === null ? "--" : numberFormat.format(uniqueVisitors);
+    const visitorsLabel =
+      locale === "pt"
+        ? "pessoas unicas viram este portfolio"
+        : "unique people visited this portfolio";
+
+    return [{ value: visitorsValue, label: visitorsLabel }, ...content.snapshot];
+  }, [content.snapshot, locale, uniqueVisitors]);
+
+  const trackNavigationClick = (target: string, location: string) => {
+    trackEvent("nav_click", { target, location, locale });
+  };
+
+  const trackContactClick = (channel: string, location: string) => {
+    trackEvent("contact_click", { channel, location, locale });
+  };
 
   const orbLeftY = useSpring(useTransform(scrollY, [0, 900], [0, -120]), {
     stiffness: 120,
@@ -195,13 +253,25 @@ export function HomePage() {
               Guilherme.Bodart.dev
             </a>
             <div className="hidden items-center gap-6 text-sm text-muted md:flex">
-              <a href="#projects" className="transition hover:text-foreground">
+              <a
+                href="#projects"
+                onClick={() => trackNavigationClick("projects", "header")}
+                className="transition hover:text-foreground"
+              >
                 {copy.navProjects}
               </a>
-              <a href="#expertise" className="transition hover:text-foreground">
+              <a
+                href="#expertise"
+                onClick={() => trackNavigationClick("expertise", "header")}
+                className="transition hover:text-foreground"
+              >
                 {copy.navExpertise}
               </a>
-              <a href="#contact" className="transition hover:text-foreground">
+              <a
+                href="#contact"
+                onClick={() => trackNavigationClick("contact", "header")}
+                className="transition hover:text-foreground"
+              >
                 {copy.navContact}
               </a>
             </div>
@@ -209,7 +279,10 @@ export function HomePage() {
               <div className="inline-flex items-center gap-1 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => setLocale("pt")}
+                  onClick={() => {
+                    setLocale("pt");
+                    trackEvent("locale_change", { from: locale, to: "pt", location: "home_header" });
+                  }}
                   className={`px-1 py-1 transition ${locale === "pt"
                     ? "text-foreground"
                     : "text-foreground/55 hover:text-foreground"
@@ -221,7 +294,10 @@ export function HomePage() {
                 <span className="text-foreground/35">/</span>
                 <button
                   type="button"
-                  onClick={() => setLocale("en")}
+                  onClick={() => {
+                    setLocale("en");
+                    trackEvent("locale_change", { from: locale, to: "en", location: "home_header" });
+                  }}
                   className={`px-1 py-1 transition ${locale === "en"
                     ? "text-foreground"
                     : "text-foreground/55 hover:text-foreground"
@@ -233,7 +309,14 @@ export function HomePage() {
               </div>
               <button
                 type="button"
-                onClick={toggleTheme}
+                onClick={() => {
+                  trackEvent("theme_toggle", {
+                    from: theme,
+                    to: theme === "light" ? "dark" : "light",
+                    location: "home_header",
+                  });
+                  toggleTheme();
+                }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg"
                 aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
               >
@@ -245,7 +328,11 @@ export function HomePage() {
               </button>
               <button
                 type="button"
-                onClick={() => setIsMobileMenuOpen((current) => !current)}
+                onClick={() => {
+                  const nextState = !isMobileMenuOpen;
+                  trackEvent(nextState ? "mobile_menu_open" : "mobile_menu_close", { locale });
+                  setIsMobileMenuOpen(nextState);
+                }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg md:hidden"
                 aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
                 aria-expanded={isMobileMenuOpen}
@@ -261,7 +348,10 @@ export function HomePage() {
         <div className="fixed inset-0 z-40 md:hidden" id="mobile-nav-menu">
           <button
             type="button"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => {
+              trackEvent("mobile_menu_close", { locale, location: "overlay" });
+              setIsMobileMenuOpen(false);
+            }}
             aria-label="Fechar menu"
             className="absolute inset-0 bg-background/60 backdrop-blur-sm"
           />
@@ -275,7 +365,10 @@ export function HomePage() {
               <p className="text-sm font-semibold text-foreground">Menu</p>
               <button
                 type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  trackEvent("mobile_menu_close", { locale, location: "drawer_button" });
+                  setIsMobileMenuOpen(false);
+                }}
                 aria-label="Fechar menu"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-card-strong text-foreground"
               >
@@ -285,21 +378,30 @@ export function HomePage() {
             <div className="flex flex-col gap-2 text-sm text-muted">
               <a
                 href="#projects"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  trackNavigationClick("projects", "mobile_menu");
+                  setIsMobileMenuOpen(false);
+                }}
                 className="rounded-xl px-3 py-2 transition hover:bg-card-strong hover:text-foreground"
               >
                 {copy.navProjects}
               </a>
               <a
                 href="#expertise"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  trackNavigationClick("expertise", "mobile_menu");
+                  setIsMobileMenuOpen(false);
+                }}
                 className="rounded-xl px-3 py-2 transition hover:bg-card-strong hover:text-foreground"
               >
                 {copy.navExpertise}
               </a>
               <a
                 href="#contact"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  trackNavigationClick("contact", "mobile_menu");
+                  setIsMobileMenuOpen(false);
+                }}
                 className="rounded-xl px-3 py-2 transition hover:bg-card-strong hover:text-foreground"
               >
                 {copy.navContact}
@@ -335,6 +437,7 @@ export function HomePage() {
             <div className="flex flex-wrap gap-3">
               <a
                 href="#projects"
+                onClick={() => trackNavigationClick("projects", "hero_cta")}
                 className="inline-flex h-12 w-[11.25rem] items-center justify-center gap-2 rounded-full bg-foreground px-5 text-sm font-semibold text-background transition hover:-translate-y-1 hover:shadow-xl"
               >
                 {copy.heroPrimaryCta}
@@ -342,6 +445,7 @@ export function HomePage() {
               </a>
               <a
                 href="#expertise"
+                onClick={() => trackNavigationClick("expertise", "hero_cta")}
                 className="inline-flex h-12 w-[11.25rem] items-center justify-center gap-2 rounded-full border border-line bg-card-strong px-5 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-lg"
               >
                 {copy.heroSecondaryCta}
@@ -356,7 +460,7 @@ export function HomePage() {
                 {copy.snapshotTitle}
               </p>
               <div className="mt-6 space-y-5">
-                {content.snapshot.map((item) => (
+                {snapshotItems.map((item) => (
                   <div key={`${item.value}-${item.label}`} className="rounded-2xl border border-line bg-card-strong p-4">
                     <p className="text-3xl font-semibold">{item.value}</p>
                     <p className="text-sm text-muted">{item.label}</p>
@@ -571,6 +675,13 @@ export function HomePage() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() =>
+                        trackEvent("project_open_live", {
+                          slug: project.slug,
+                          slot: index + 1,
+                          locale,
+                        })
+                      }
                       className="inline-flex items-center gap-2 text-foreground transition hover:text-accent"
                     >
                       <AnimatedText
@@ -584,6 +695,13 @@ export function HomePage() {
                     </a>
                     <Link
                       href={`/projects/${project.slug}`}
+                      onClick={() =>
+                        trackEvent("project_open_case", {
+                          slug: project.slug,
+                          slot: index + 1,
+                          locale,
+                        })
+                      }
                       className="inline-flex items-center gap-2 text-foreground transition hover:text-accent"
                     >
                       <AnimatedText
@@ -672,6 +790,7 @@ export function HomePage() {
                   href="https://github.com/Guilherme-Bodart"
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => trackContactClick("github", "contact_section")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card-strong px-4 py-3 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <Github className="h-4 w-4" />
@@ -682,6 +801,7 @@ export function HomePage() {
                   href="https://www.linkedin.com/in/guilherme-bodart-819205194/"
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => trackContactClick("linkedin", "contact_section")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card-strong px-4 py-3 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <Linkedin className="h-4 w-4" />
@@ -691,6 +811,7 @@ export function HomePage() {
                 {/* Linha 2 */}
                 <a
                   href="mailto:guilhermebodart73@gmail.com"
+                  onClick={() => trackContactClick("email", "contact_section")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-foreground px-4 py-3 text-sm font-semibold text-background transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <Mail className="h-4 w-4" />
@@ -701,6 +822,7 @@ export function HomePage() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackContactClick("whatsapp", "contact_section")}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-foreground px-4 py-3 text-sm font-semibold text-background transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
                 >
                   <MessageCircleMore className="h-4 w-4" />

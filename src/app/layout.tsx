@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${plusJakarta.variable} ${spaceGrotesk.variable} antialiased`}
       >
         {children}
+        <GoogleAnalytics />
       </body>
     </html>
   );
