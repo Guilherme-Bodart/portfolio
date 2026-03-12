@@ -203,8 +203,8 @@ export function HomePage() {
     const visitorsValue = uniqueVisitors === null ? "--" : numberFormat.format(uniqueVisitors);
     const visitorsLabel =
       locale === "pt"
-        ? "pessoas unicas viram este portfolio"
-        : "unique people visited this portfolio";
+        ? "pessoas viram este portfólio"
+        : "people visited this portfolio";
 
     return [{ value: visitorsValue, label: visitorsLabel }, ...content.snapshot];
   }, [content.snapshot, locale, uniqueVisitors]);
