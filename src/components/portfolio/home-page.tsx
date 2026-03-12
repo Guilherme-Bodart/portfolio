@@ -722,9 +722,8 @@ export function HomePage() {
 
         <motion.section
           id="expertise"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.16 }}
+          initial="show"
+          animate="show"
           variants={stagger}
           className="space-y-8 py-12"
         >
