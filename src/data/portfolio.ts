@@ -53,6 +53,11 @@ export type HomeCopy = {
   contactCta: string;
   langPt: string;
   langEn: string;
+  menuLabel: string;
+  openMenuLabel: string;
+  closeMenuLabel: string;
+  themeToDarkLabel: string;
+  themeToLightLabel: string;
   heroBadge: string;
   heroTitleLine1: string;
   heroTitleLine2: string;
@@ -414,6 +419,11 @@ export const homeContentByLocale: Record<Locale, HomeContent> = {
       contactCta: "Contato",
       langPt: "PT",
       langEn: "EN",
+      menuLabel: "Menu",
+      openMenuLabel: "Abrir menu",
+      closeMenuLabel: "Fechar menu",
+      themeToDarkLabel: "Ativar tema escuro",
+      themeToLightLabel: "Ativar tema claro",
       heroBadge: "Desenvolvedor full stack com foco em qualidade de produto",
       heroTitleLine1: "Portfólio simples na leitura,",
       heroTitleLine2: "forte na execução.",
@@ -463,6 +473,11 @@ export const homeContentByLocale: Record<Locale, HomeContent> = {
       contactCta: "Contact",
       langPt: "PT",
       langEn: "EN",
+      menuLabel: "Menu",
+      openMenuLabel: "Open menu",
+      closeMenuLabel: "Close menu",
+      themeToDarkLabel: "Enable dark theme",
+      themeToLightLabel: "Enable light theme",
       heroBadge: "Full stack developer focused on product quality",
       heroTitleLine1: "Simple to read portfolio,",
       heroTitleLine2: "strong on execution.",

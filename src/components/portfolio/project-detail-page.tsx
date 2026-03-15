@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import {
   ArrowLeft,
@@ -20,6 +21,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   type FeatureIconKey,
+  type Locale,
   type ProjectSlug,
 } from "@/data/portfolio";
 import { detailCopyByLocale, projectDetailsByLocale } from "@/data/project-details";
@@ -27,6 +29,7 @@ import { usePortfolioPreferences } from "@/components/portfolio/use-portfolio-pr
 import { CursorGlow } from "@/components/motion/cursor-glow";
 import { ProjectLogo } from "@/components/portfolio/project-logo";
 import { trackEvent } from "@/lib/analytics";
+import { switchLocalePath } from "@/lib/locale";
 
 const featureIcons: Record<FeatureIconKey, LucideIcon> = {
   layers: Layers3,
@@ -53,15 +56,28 @@ const stagger: Variants = {
 
 type ProjectDetailPageProps = {
   slug: ProjectSlug;
+  initialLocale: Locale;
 };
 
-export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
-  const { locale, setLocale, theme, toggleTheme } = usePortfolioPreferences();
+export function ProjectDetailPage({ slug, initialLocale }: ProjectDetailPageProps) {
+  const { locale, setLocale, theme, toggleTheme } = usePortfolioPreferences(initialLocale);
+  const router = useRouter();
+  const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
   const isDarkTheme = theme === "dark";
 
   const copy = detailCopyByLocale[locale];
   const project = projectDetailsByLocale[locale][slug];
+  const handleLocaleChange = (nextLocale: Locale) => {
+    if (nextLocale === locale) {
+      return;
+    }
+
+    trackEvent("locale_change", { from: locale, to: nextLocale, location: "project_detail" });
+    setLocale(nextLocale);
+    router.push(switchLocalePath(pathname ?? "/", nextLocale));
+  };
+
   const battleCards = [
     {
       title: copy.challengeTitle,
@@ -98,7 +114,7 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
         <div className="rounded-full border border-line/80 bg-card/90 px-4 py-3 backdrop-blur-xl md:px-6">
           <nav className="flex items-center justify-between gap-4">
             <Link
-              href="/"
+              href={`/${locale}`}
               onClick={() => trackEvent("back_to_home_click", { slug: project.slug, locale })}
               className="inline-flex items-center gap-2 text-sm font-semibold text-foreground"
             >
@@ -110,8 +126,7 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setLocale("pt");
-                    trackEvent("locale_change", { from: locale, to: "pt", location: "project_detail" });
+                    handleLocaleChange("pt");
                   }}
                   className={`px-1 py-1 transition ${
                     locale === "pt"
@@ -126,8 +141,7 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setLocale("en");
-                    trackEvent("locale_change", { from: locale, to: "en", location: "project_detail" });
+                    handleLocaleChange("en");
                   }}
                   className={`px-1 py-1 transition ${
                     locale === "en"
@@ -150,7 +164,7 @@ export function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                   toggleTheme();
                 }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg"
-                aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
+                aria-label={theme === "light" ? copy.themeToDarkLabel : copy.themeToLightLabel}
               >
                 {theme === "light" ? (
                   <Moon className="h-4 w-4" />

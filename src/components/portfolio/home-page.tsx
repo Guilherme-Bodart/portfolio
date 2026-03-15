@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   motion,
@@ -33,12 +34,14 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   homeContentByLocale,
+  type Locale,
   type ExpertiseIconKey,
 } from "@/data/portfolio";
 import { CursorGlow } from "@/components/motion/cursor-glow";
 import { usePortfolioPreferences } from "@/components/portfolio/use-portfolio-preferences";
 import { ProjectLogo } from "@/components/portfolio/project-logo";
 import { trackEvent } from "@/lib/analytics";
+import { switchLocalePath } from "@/lib/locale";
 
 const expertiseIcons: Record<ExpertiseIconKey, LucideIcon> = {
   layers: Layers3,
@@ -121,8 +124,14 @@ function AnimatedText({
   return <span className={className}>{reducedMotion ? text : displayText}</span>;
 }
 
-export function HomePage() {
-  const { locale, setLocale, theme, toggleTheme } = usePortfolioPreferences();
+type HomePageProps = {
+  initialLocale: Locale;
+};
+
+export function HomePage({ initialLocale }: HomePageProps) {
+  const { locale, setLocale, theme, toggleTheme } = usePortfolioPreferences(initialLocale);
+  const router = useRouter();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [projectWindowStart, setProjectWindowStart] = useState(0);
   const [uniqueVisitors, setUniqueVisitors] = useState<number | null>(null);
@@ -130,8 +139,12 @@ export function HomePage() {
   const { scrollY } = useScroll();
 
   const phoneNumber = "5527999787337";
-  const message = encodeURIComponent("Olá Guilherme, vi o teu portfólio e gostaria de conversar!");
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  const localizedWhatsappMessage = encodeURIComponent(
+    locale === "pt"
+      ? "Olá Guilherme, vi o teu portfólio e gostaria de conversar!"
+      : "Hi Guilherme, I saw your portfolio and would like to talk!"
+  );
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${localizedWhatsappMessage}`;
 
   const content = homeContentByLocale[locale];
   const copy = content.copy;
@@ -217,6 +230,19 @@ export function HomePage() {
     trackEvent("contact_click", { channel, location, locale });
   };
 
+  const handleLocaleChange = (nextLocale: Locale, location: string) => {
+    if (nextLocale === locale) {
+      return;
+    }
+
+    trackEvent("locale_change", { from: locale, to: nextLocale, location });
+    setLocale(nextLocale);
+
+    const nextPath = switchLocalePath(pathname ?? "/", nextLocale);
+    const hash = window.location.hash;
+    router.push(`${nextPath}${hash}`);
+  };
+
   const orbLeftY = useSpring(useTransform(scrollY, [0, 900], [0, -120]), {
     stiffness: 120,
     damping: 24,
@@ -280,8 +306,7 @@ export function HomePage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setLocale("pt");
-                    trackEvent("locale_change", { from: locale, to: "pt", location: "home_header" });
+                    handleLocaleChange("pt", "home_header");
                   }}
                   className={`px-1 py-1 transition ${locale === "pt"
                     ? "text-foreground"
@@ -295,8 +320,7 @@ export function HomePage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setLocale("en");
-                    trackEvent("locale_change", { from: locale, to: "en", location: "home_header" });
+                    handleLocaleChange("en", "home_header");
                   }}
                   className={`px-1 py-1 transition ${locale === "en"
                     ? "text-foreground"
@@ -318,7 +342,7 @@ export function HomePage() {
                   toggleTheme();
                 }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg"
-                aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
+                aria-label={theme === "light" ? copy.themeToDarkLabel : copy.themeToLightLabel}
               >
                 {theme === "light" ? (
                   <Moon className="h-4 w-4" />
@@ -334,7 +358,7 @@ export function HomePage() {
                   setIsMobileMenuOpen(nextState);
                 }}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card-strong text-foreground transition hover:-translate-y-0.5 hover:shadow-lg md:hidden"
-                aria-label={isMobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+                aria-label={isMobileMenuOpen ? copy.closeMenuLabel : copy.openMenuLabel}
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-nav-menu"
               >
@@ -352,7 +376,7 @@ export function HomePage() {
               trackEvent("mobile_menu_close", { locale, location: "overlay" });
               setIsMobileMenuOpen(false);
             }}
-            aria-label="Fechar menu"
+            aria-label={copy.closeMenuLabel}
             className="absolute inset-0 bg-background/60 backdrop-blur-sm"
           />
           <motion.aside
@@ -362,14 +386,14 @@ export function HomePage() {
             className="absolute right-0 top-0 h-full w-[min(20rem,88vw)] border-l border-line bg-card p-6 shadow-2xl"
           >
             <div className="mb-8 flex items-center justify-between">
-              <p className="text-sm font-semibold text-foreground">Menu</p>
+              <p className="text-sm font-semibold text-foreground">{copy.menuLabel}</p>
               <button
                 type="button"
                 onClick={() => {
                   trackEvent("mobile_menu_close", { locale, location: "drawer_button" });
                   setIsMobileMenuOpen(false);
                 }}
-                aria-label="Fechar menu"
+                aria-label={copy.closeMenuLabel}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-card-strong text-foreground"
               >
                 <X className="h-4 w-4" />
@@ -694,7 +718,7 @@ export function HomePage() {
                       <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </a>
                     <Link
-                      href={`/projects/${project.slug}`}
+                      href={`/${locale}/projects/${project.slug}`}
                       onClick={() =>
                         trackEvent("project_open_case", {
                           slug: project.slug,
@@ -844,3 +868,5 @@ export function HomePage() {
     </div>
   );
 }
+
+

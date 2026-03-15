@@ -43,6 +43,8 @@ export type DetailCopy = {
   nextStepsTitle: string;
   langPt: string;
   langEn: string;
+  themeToDarkLabel: string;
+  themeToLightLabel: string;
 };
 
 export const detailCopyByLocale: Record<Locale, DetailCopy> = {
@@ -61,6 +63,8 @@ export const detailCopyByLocale: Record<Locale, DetailCopy> = {
     nextStepsTitle: "Próximos passos",
     langPt: "PT",
     langEn: "EN",
+    themeToDarkLabel: "Ativar tema escuro",
+    themeToLightLabel: "Ativar tema claro",
   },
   en: {
     backToHome: "Back to portfolio",
@@ -77,6 +81,8 @@ export const detailCopyByLocale: Record<Locale, DetailCopy> = {
     nextStepsTitle: "Next steps",
     langPt: "PT",
     langEn: "EN",
+    themeToDarkLabel: "Enable dark theme",
+    themeToLightLabel: "Enable light theme",
   },
 };
 
@@ -133,52 +139,52 @@ const detailsPt: Record<ProjectSlug, ProjectDetail> = {
   },
   portfolio: {
     slug: "portfolio",
-    name: "Portfolio Pessoal",
-    subtitle: "Site autoral para apresentar projetos, experiencia e proposta tecnica com leitura objetiva.",
+    name: "Portfólio Pessoal",
+    subtitle: "Site autoral para apresentar projetos, experiência e proposta técnica com leitura objetiva.",
     overview:
-      "Este projeto e o proprio site de portfolio. Estruturei uma experiencia focada em clareza, com cards de projetos rotativos, pagina de case por slug, internacionalizacao PT/EN, tema claro/escuro e componentes reutilizaveis para evolucao continua.",
+      "Este projeto é o próprio site de portfólio. Estruturei uma experiência focada em clareza, com cards de projetos rotativos, página de case por slug, internacionalização PT/EN, tema claro/escuro e componentes reutilizáveis para evolução contínua.",
     metrics: [
       { value: "Next.js + TS", label: "Base moderna com App Router e tipagem forte" },
-      { value: "UI orientada a conversao", label: "Fluxo direto entre projeto, expertise e contato" },
-      { value: "Manutencao simples", label: "Dados centralizados para atualizar sem retrabalho" },
+      { value: "UI orientada à conversão", label: "Fluxo direto entre projeto, expertise e contato" },
+      { value: "Manutenção simples", label: "Dados centralizados para atualizar sem retrabalho" },
     ],
     challenge:
-      "Construir um portfolio com identidade propria, bom desempenho e conteudo tecnico real sem ficar pesado visualmente.",
+      "Construir um portfólio com identidade própria, bom desempenho e conteúdo técnico real sem ficar pesado visualmente.",
     solution:
-      "Arquitetura em Next.js com componentes modulares, Framer Motion para microanimacoes, dados em arquivos tipados e fallback visual para logos/projetos.",
+      "Arquitetura em Next.js com componentes modulares, Framer Motion para microanimações, dados em arquivos tipados e fallback visual para logos/projetos.",
     outcome:
-      "Portfolio mais profissional para apresentar experiencia real, facilitar contato e sustentar novas iteracoes com baixo custo de manutencao.",
+      "Portfólio mais profissional para apresentar experiência real, facilitar contato e sustentar novas iterações com baixo custo de manutenção.",
     frontendStack: [
       "Next.js (App Router) + React + TypeScript",
-      "Tailwind CSS com tokens de tema e variaveis globais",
-      "Framer Motion para transicoes e entrada de secoes",
-      "UI responsiva com menu mobile e navegacao por ancora",
+      "Tailwind CSS com tokens de tema e variáveis globais",
+      "Framer Motion para transições e entrada de seções",
+      "UI responsiva com menu mobile e navegação por âncora",
     ],
     backendStack: [
-      "Dados de portfolio e cases em estruturas tipadas",
-      "Roteamento dinamico em /projects/[slug]",
-      "Fallback para rotas invalidas redirecionando para home",
+      "Dados de portfólio e cases em estruturas tipadas",
+      "Roteamento dinâmico em /projects/[slug]",
+      "Fallback para rotas inválidas redirecionando para home",
       "Estrutura preparada para adicionar novos projetos rapidamente",
     ],
     features: [
-      { title: "Cards rotativos", description: "Mostra 4 projetos por vez com rotacao automatica.", icon: "layers" },
-      { title: "Cases detalhados", description: "Cada projeto tem pagina propria com contexto tecnico.", icon: "workflow" },
-      { title: "Tema e idioma", description: "Suporte a dark/light e PT/EN com preferencia persistida.", icon: "zap" },
-      { title: "Contato direto", description: "Acesso rapido para email, WhatsApp, GitHub e LinkedIn.", icon: "shield" },
+      { title: "Cards rotativos", description: "Mostra 4 projetos por vez com rotação automática.", icon: "layers" },
+      { title: "Cases detalhados", description: "Cada projeto tem página própria com contexto técnico.", icon: "workflow" },
+      { title: "Tema e idioma", description: "Suporte a dark/light e PT/EN com preferência persistida.", icon: "zap" },
+      { title: "Contato direto", description: "Acesso rápido para email, WhatsApp, GitHub e LinkedIn.", icon: "shield" },
     ],
     securityReliability: [
-      "Tipagem forte para evitar inconsistencias em dados de projeto.",
-      "Fallback visual para evitar quebra quando um logo nao existe.",
-      "Rota invalida redirecionada para home para evitar erro seco ao usuario.",
+      "Tipagem forte para evitar inconsistências em dados de projeto.",
+      "Fallback visual para evitar quebra quando um logo não existe.",
+      "Rota inválida redirecionada para home para evitar erro seco ao usuário.",
     ],
     codeQuality: [
-      "Componentes separados por responsabilidade e reutilizacao.",
-      "Padrao consistente de dados entre card e pagina detalhada.",
-      "Lint e typecheck como base de qualidade durante evolucao.",
+      "Componentes separados por responsabilidade e reutilização.",
+      "Padrão consistente de dados entre card e página detalhada.",
+      "Lint e typecheck como base de qualidade durante evolução.",
     ],
     nextSteps: [
-      "Conectar analytics para medir cliques em contato e projetos.",
-      "Adicionar mais cases e refinamentos de narrativa por segmento.",
+      "Expandir cobertura de testes automatizados para fluxos críticos.",
+      "Refinar SEO técnico por página de case para melhorar descoberta orgânica.",
     ],
     liveUrl: "https://github.com/Guilherme-Bodart/portfolio",
     liveLabel: "Ver no GitHub",
@@ -491,8 +497,8 @@ const detailsEn: Record<ProjectSlug, ProjectDetail> = {
       "Lint and typecheck used as delivery quality gates.",
     ],
     nextSteps: [
-      "Add analytics to track project and contact interactions.",
-      "Expand case studies and improve narrative by target segment.",
+      "Expand automated test coverage for critical user flows.",
+      "Refine per-case technical SEO to improve organic discoverability.",
     ],
     liveUrl: "https://github.com/Guilherme-Bodart/portfolio",
     liveLabel: "View on GitHub",

@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio - Guilherme Bodart
 
-## Getting Started
+Portfólio pessoal em Next.js com páginas em PT/EN, cases por projeto, animações com Framer Motion e integração com Google Analytics 4.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- Tailwind CSS 4
+- Framer Motion
+- Google Analytics 4 (eventos e page views)
+
+## Funcionalidades
+
+- Rotas localizadas: `/pt` e `/en`
+- Página de case por projeto: `/{locale}/projects/{slug}`
+- Seletor de idioma com persistência em `localStorage`
+- Tema claro/escuro com persistência
+- Snapshot com total de visitantes únicos (GA4 Data API)
+- SEO técnico com metadata dinâmica, `sitemap.xml` e `robots.txt`
+- Fallback visual para logos de projetos
+
+## Estrutura principal
+
+- `src/app/[locale]/page.tsx`: home por idioma
+- `src/app/[locale]/projects/[slug]/page.tsx`: case por idioma e slug
+- `src/components/portfolio/home-page.tsx`: UI principal da home
+- `src/components/portfolio/project-detail-page.tsx`: UI dos cases
+- `src/data/portfolio.ts`: conteúdo da home (PT/EN)
+- `src/data/project-details.ts`: conteúdo detalhado dos cases (PT/EN)
+- `src/app/api/analytics/unique-visitors/route.ts`: endpoint para total de usuários no GA4
+
+## Variáveis de ambiente
+
+Copie `.env.example` para `.env.local` e preencha:
+
+- `NEXT_PUBLIC_SITE_URL`: URL canônica do site (usada em metadata/sitemap/robots)
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`: ID do GA4 (frontend)
+- `GA4_PROPERTY_ID`: propriedade GA4 para Data API
+- `GA4_SERVICE_ACCOUNT_EMAIL`: e-mail da service account
+- `GA4_SERVICE_ACCOUNT_PRIVATE_KEY`: chave privada da service account
+- `GA4_ANALYTICS_START_DATE`: data inicial para cálculo de `totalUsers`
+
+## Scripts
+
+- `pnpm dev`: ambiente local
+- `pnpm lint`: lint com ESLint
+- `pnpm typecheck`: checagem de tipos TypeScript
+- `pnpm test`: testes com Node test runner (`tsx --test`)
+- `pnpm build`: build de produção
+- `pnpm start`: sobe build de produção
+
+## Qualidade e CI
+
+Pipeline em `.github/workflows/ci.yml` executa:
+
+1. Lint
+2. Typecheck
+3. Testes
+4. Build
+
+## Execução local
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Abra `http://localhost:3000` (redireciona para `/pt`).

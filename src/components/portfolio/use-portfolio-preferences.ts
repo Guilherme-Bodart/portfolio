@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Locale, ThemeMode } from "@/data/portfolio";
+import { localeToHtmlLang } from "@/lib/locale";
 
 const LOCALE_KEY = "portfolio-locale";
 const THEME_KEY = "portfolio-theme";
@@ -36,12 +37,15 @@ function getInitialTheme(): ThemeMode {
     : "light";
 }
 
-export function usePortfolioPreferences() {
-  const [locale, setLocale] = useState<Locale>(getInitialLocale);
+export function usePortfolioPreferences(initialLocale?: Locale) {
+  const [locale, setLocale] = useState<Locale>(
+    () => initialLocale ?? getInitialLocale()
+  );
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
   useEffect(() => {
     window.localStorage.setItem(LOCALE_KEY, locale);
+    document.documentElement.lang = localeToHtmlLang(locale);
   }, [locale]);
 
   useEffect(() => {

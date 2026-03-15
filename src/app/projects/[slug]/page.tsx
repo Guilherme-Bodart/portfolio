@@ -1,6 +1,5 @@
-﻿import { redirect } from "next/navigation";
-import { ProjectDetailPage } from "@/components/portfolio/project-detail-page";
-import { isProjectSlug, projectSlugs } from "@/data/portfolio";
+import { notFound, redirect } from "next/navigation";
+import { isProjectSlug } from "@/data/portfolio";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -8,16 +7,12 @@ type ProjectPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return projectSlugs.map((slug) => ({ slug }));
-}
-
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
 
   if (!isProjectSlug(slug)) {
-    redirect("/");
+    notFound();
   }
 
-  return <ProjectDetailPage slug={slug} />;
+  redirect(`/pt/projects/${slug}`);
 }
