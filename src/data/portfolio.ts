@@ -82,6 +82,8 @@ export type HomeCopy = {
   contactDescription: string;
   sendEmail: string;
   whatsapp: string;
+  downloadResumeEn: string;
+  downloadResumePt: string;
   footerMain: string;
   footerSub: string;
   snapshotTitle: string;
@@ -452,6 +454,8 @@ export const homeContentByLocale: Record<Locale, HomeContent> = {
         "Aberto para projetos com desafio técnico real, foco em produto e execução consistente.",
       sendEmail: "Enviar e-mail",
       whatsapp: "Whatsapp",
+      downloadResumeEn: "Currículo (EN)",
+      downloadResumePt: "Currículo (PT)",
       footerMain: "© 2026 Guilherme Bodart",
       footerSub: "Construído com Next.js, TypeScript e Tailwind CSS",
       snapshotTitle: "Snapshot",
@@ -506,6 +510,8 @@ export const homeContentByLocale: Record<Locale, HomeContent> = {
         "Open to product work with real technical challenges and strong execution needs.",
       sendEmail: "Send email",
       whatsapp: "Whatsapp",
+      downloadResumeEn: "Resume (EN)",
+      downloadResumePt: "Resume (PT)",
       footerMain: "© 2026 Guilherme Bodart",
       footerSub: "Built with Next.js, TypeScript, and Tailwind CSS",
       snapshotTitle: "Snapshot",

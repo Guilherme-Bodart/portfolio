@@ -851,6 +851,27 @@ export function HomePage({ initialLocale }: HomePageProps) {
                   <MessageCircleMore className="h-4 w-4" />
                   {copy.whatsapp}
                 </a>
+
+                {/* Linha 3 */}
+                <a
+                  href="/resume-guilherme-bodart-en.pdf"
+                  download="Resume-Guilherme-Bodart.pdf"
+                  onClick={() => trackContactClick("resume_en", "contact_section")}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card-strong px-4 py-3 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <FileText className="h-4 w-4" />
+                  {copy.downloadResumeEn}
+                </a>
+
+                <a
+                  href="/curriculo-guilherme-bodart-pt.pdf"
+                  download="Guilherme-Bodart-Curriculo.pdf"
+                  onClick={() => trackContactClick("resume_pt", "contact_section")}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card-strong px-4 py-3 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <FileText className="h-4 w-4" />
+                  {copy.downloadResumePt}
+                </a>
               </div>
 
             </div>
